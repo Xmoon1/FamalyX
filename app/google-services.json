@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1061330637868",
+    "project_id": "familyx-2e02a",
+    "storage_bucket": "familyx-2e02a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061330637868:android:9e92d8233fbf10fcb8ed89",
+        "android_client_info": {
+          "package_name": "com.example.familyx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1061330637868-l6tlppf6km8sco61uqbmort1n7o79v21.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-E8pgfNEWEVVXABJwArQ4bRoKd1vXpBg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1061330637868-l6tlppf6km8sco61uqbmort1n7o79v21.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
