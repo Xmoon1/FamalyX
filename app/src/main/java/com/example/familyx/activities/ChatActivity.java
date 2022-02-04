@@ -1,14 +1,10 @@
 package com.example.familyx.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
-
 import com.example.familyx.adapters.ChatAdapter;
 import com.example.familyx.databinding.ActivityChatBinding;
 import com.example.familyx.models.ChatMessage;
@@ -21,7 +17,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class ChatActivity extends BaseActivity {
 
@@ -41,6 +37,7 @@ public class ChatActivity extends BaseActivity {
     private ChatAdapter chatAdapter;
     private FirebaseFirestore database;
     private String conversationId = null;
+    private Boolean isReceiverAvailable = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,15 +48,16 @@ public class ChatActivity extends BaseActivity {
         preferenceManager = new PreferenceManager(getApplicationContext());
         loadReceiverDetails();
         init();
-
         listenMessages();
+        User user = new User();
+        Bitmap image = getUserInfo(preferenceManager.getString(Constants.KEY_IMAGE));
+        binding.imageInfoButton.setImageBitmap(image);
 
     }
 
     private void loadReceiverDetails(){
         receiverUser = (User)getIntent().getSerializableExtra(Constants.KEY_USER);
         binding.textName.setText(receiverUser.name);
-        binding.imageInfoButton.setImageBitmap(getImageInfoButton(receiverUser.image));
     }
 
     private void sendMessage(){
@@ -82,10 +80,31 @@ public class ChatActivity extends BaseActivity {
             conversion.put(Constants.KEY_LAST_MESSAGE, binding.inputMessage.getText().toString());
             conversion.put(Constants.KEY_TIMESTAMP, new Date());
             addConversation(conversion);
-
-
         }
         binding.inputMessage.setText(null);
+    }
+
+    private void listAvailabilityOfReceiver(){
+        database.collection(Constants.KEY_COLLECTION_USERS).document(
+                receiverUser.id
+        ).addSnapshotListener(ChatActivity.this, (value, error) -> {
+            if (error != null){
+                return;
+            }if (value != null){
+                if (value.getLong(Constants.KEY_AVAILABILITY) != null){
+                    int availability = Objects.requireNonNull(
+                            value.getLong(Constants.KEY_AVAILABILITY)
+                    ).intValue();
+                    isReceiverAvailable = availability == 1;
+                }
+                receiverUser.token = value.getString(Constants.KEY_FCM_TOKEN);
+            }
+            if (isReceiverAvailable){
+                binding.textAvailability.setVisibility(View.VISIBLE);
+            }else {
+                binding.textAvailability.setText("Offline");
+            }
+        });
     }
 
     private void listenMessages(){
@@ -124,12 +143,12 @@ public class ChatActivity extends BaseActivity {
                 binding.chatRecyclerView.smoothScrollToPosition(chatMessages.size() - 1);
             }
             binding.chatRecyclerView.setVisibility(View.VISIBLE);
-    }
+        }
         binding.progressBar.setVisibility(View.GONE);
         if (conversationId == null){
             checkForConversation();
         }
-};
+    };
 
 
     private void setListeners(){
@@ -153,12 +172,6 @@ public class ChatActivity extends BaseActivity {
         binding.chatRecyclerView.setAdapter(chatAdapter);
         database = FirebaseFirestore.getInstance();
     }
-
-    private Bitmap getImageInfoButton(String  encodedImage){
-        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-    }
-
 
     private String getReadableDataTime(Date date){
         return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
@@ -207,5 +220,16 @@ public class ChatActivity extends BaseActivity {
             conversationId = documentSnapshot.getId();
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listAvailabilityOfReceiver();
+    }
+
+    private Bitmap getUserInfo(String encodedImage){
+        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
 }
 

@@ -126,15 +126,15 @@ public class MainActivity extends BaseActivity implements ConversionListener {
                     chatMessage.senderId = senderId;
                     chatMessage.receiverId = receiverId;
                     if (preferenceManager.getString(Constants.KEY_USER_ID).equals(senderId)) {
-                        chatMessage.conversionImage = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
-                        chatMessage.conversionName = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
+                        chatMessage.conversionImage = documentChange.getDocument().getString(Constants.KEY_IMAGE);
+                        chatMessage.conversionName = documentChange.getDocument().getString(Constants.KEY_NAME);
                         chatMessage.conversionId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
                     }else{
-                            chatMessage.conversionImage = documentChange.getDocument().getString(Constants.KEY_SENDER_IMAGE);
-                            chatMessage.conversionName = documentChange.getDocument().getString(Constants.KEY_SENDER_NAME);
-                            chatMessage.conversionId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
+                        chatMessage.conversionImage = documentChange.getDocument().getString(Constants.KEY_SENDER_IMAGE);
+                        chatMessage.conversionName = documentChange.getDocument().getString(Constants.KEY_SENDER_NAME);
+                        chatMessage.conversionId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
                     }
-                    chatMessage.message = documentChange.getDocument().getString(Constants.KEY_MESSAGE);
+                    chatMessage.message = documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE);
                     chatMessage.dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
                     conversations.add(chatMessage);
                 }else if (documentChange.getType() == DocumentChange.Type.MODIFIED){
@@ -142,7 +142,7 @@ public class MainActivity extends BaseActivity implements ConversionListener {
                         String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
                         String receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
                         if (conversations.get(i).senderId.equals(senderId) && conversations.get(i).receiverId.equals(receiverId)){
-                            conversations.get(i).message = documentChange.getDocument().getString(Constants.KEY_MESSAGE);
+                            conversations.get(i).message = documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE);
                             conversations.get(i).dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
                             break;
                         }
