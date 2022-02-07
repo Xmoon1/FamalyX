@@ -50,7 +50,7 @@ public class ChatActivity extends BaseActivity {
         init();
         listenMessages();
         User user = new User();
-        Bitmap image = getUserInfo(preferenceManager.getString(Constants.KEY_IMAGE));
+        Bitmap image = getUserInfo(receiverUser.image);
         binding.imageInfoButton.setImageBitmap(image);
 
     }
@@ -102,7 +102,7 @@ public class ChatActivity extends BaseActivity {
             if (isReceiverAvailable){
                 binding.textAvailability.setVisibility(View.VISIBLE);
             }else {
-                binding.textAvailability.setText("Offline");
+                binding.textAvailability.setVisibility(View.GONE);
             }
         });
     }
@@ -174,7 +174,7 @@ public class ChatActivity extends BaseActivity {
     }
 
     private String getReadableDataTime(Date date){
-        return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
+        return new SimpleDateFormat("MMMM dd, yyyy - HH:mm a", Locale.getDefault()).format(date);
     }
 
     private void addConversation(HashMap<String, Object> conversation){
