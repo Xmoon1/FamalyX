@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/_8sdp"
+    android:id="@+id/messageLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="@dimen/_4sdp">
 

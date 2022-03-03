@@ -14,87 +14,75 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.familyx.R;
 import com.example.familyx.databinding.ActivityProfileBinding;
+import com.example.familyx.models.User;
+import com.example.familyx.utilities.Constants;
+import com.example.familyx.utilities.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
     ActivityProfileBinding binding;
     String encodedImage;
+    PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setListeners();
+        preferenceManager = new PreferenceManager(getApplicationContext());
+        loadUserDetails();
         bottomNavigationView = findViewById(R.id.bottom_navigationView);
+
+        User user = new User();
+        binding.name.setText(preferenceManager.getString(Constants.KEY_NAME));
+        binding.name.setTextSize(20);
+        binding.phone.setText(preferenceManager.getString(Constants.KEY_PHONE));
+
+
+        // To Edit Profile
+        binding.toEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), EditProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        binding.imageBack.setOnClickListener(v -> onBackPressed());
 
 
         // Set Profile selected
-        bottomNavigationView.setSelectedItemId(R.id.profile);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.profile:
-                        return true;
-                    case R.id.home:
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        finish();
-                        overridePendingTransition(0, 0);
-
-                }
-                return false;
-            }
-        });
-
     }
 
-    private void setListeners(){
-        binding.imageProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            pickImage.launch(intent);
+    private void loadUserDetails(){
+        byte[] bytes = Base64.decode(preferenceManager.getString(Constants.KEY_IMAGE), Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        binding.imageProfile.setImageBitmap(bitmap);
 
-        });
+        binding.phone.setText(Constants.KEY_PHONE);
+        
     }
 
 
-    private String encodeImage(Bitmap bitmap){
-        int previewWidth = 150;
-        int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
-        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
-        byte[] bytes = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(bytes, Base64.DEFAULT);
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT)
+                .show();
     }
-
-    private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if(result.getResultCode() == RESULT_OK){
-                    if(result.getData() != null){
-                        Uri imageUri = result.getData().getData();
-                        try {
-                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            binding.imageProfile.setImageBitmap(bitmap);
-                            binding.textAddImage.setVisibility(View.GONE);
-                            encodedImage = encodeImage(bitmap);
-                        }catch (FileNotFoundException e){
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-    );
 }

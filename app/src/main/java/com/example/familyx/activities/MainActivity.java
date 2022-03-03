@@ -1,25 +1,14 @@
 package com.example.familyx.activities;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.session.MediaSession;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.familyx.R;
@@ -36,11 +25,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,6 +57,10 @@ public class MainActivity extends BaseActivity implements ConversionListener {
         init();
         listenConversation();
 
+        binding.imageProfile.setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+        });
+
         bottomNavigationView = findViewById(R.id.bottom_navigationView);
 
         // Set Profile selected
@@ -78,12 +69,17 @@ public class MainActivity extends BaseActivity implements ConversionListener {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                    case R.id.home:
+                        return true;
+                    case R.id.settings:
+                        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
-                    case R.id.home:
+                    case R.id.calls:
+                        startActivity(new Intent(getApplicationContext(), CallsActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
                         return true;
                 }
                 return false;
@@ -171,7 +167,8 @@ public class MainActivity extends BaseActivity implements ConversionListener {
     }
 
     private void setListeners(){
-        binding.imageSignOut.setOnClickListener(v -> signOut());
+        binding.newChat.setOnClickListener(v ->
+                startActivity(new Intent(getApplicationContext(), UsersActivity.class)));
         binding.fabNewChat.setOnClickListener(v ->
                 startActivity(new Intent(getApplicationContext(), UsersActivity.class)));
     }

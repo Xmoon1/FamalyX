@@ -38,7 +38,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        holder.setUsersData(users.get(position));
+        holder.setUsersData(users.get( position));
 
     }
 

@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItem;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,12 +31,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
+import android.app.ProgressDialog;
 
 public class SignUpActivity extends AppCompatActivity {
 
     String encodedImage;
     PreferenceManager preferenceManager;
     ActivitySignUpBinding binding;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,10 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setListeners();
         progressBarSpinner();
+
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Updating Profile");
+        dialog.setCancelable(false);
     }
 
     private void setListeners() {
@@ -142,22 +149,28 @@ public class SignUpActivity extends AppCompatActivity {
             showToast("Select profile image");
             return false;
         } else if (binding.inputName.getText().toString().trim().isEmpty()) {
-            showToast("Enter name");
+            binding.inputName.setError("Enter name");
+            dialog.show();
             return false;
         } else if (binding.inputPhone.getText().toString().trim().isEmpty()) {
-            showToast("Enter Phone");
+            binding.inputPhone.setError("Enter name");
+            dialog.show();
             return false;
         } else if (!Patterns.PHONE.matcher(binding.inputPhone .getText().toString()).matches()) {
-            showToast("Enter valid phone");
+            binding.inputPhone.setError("Enter valid phone");
+            dialog.show();
             return false;
         } else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
-            showToast("Enter Password");
+            binding.inputPassword.setError("Enter password");
+            dialog.show();
             return false;
         } else if (binding.inputConfirmPassword.getText().toString().trim().isEmpty()) {
-            showToast("Confirm your Password");
+            binding.inputConfirmPassword.setError("Please confirm password");
+            dialog.show();
             return false;
         }else if(!binding.inputPassword.getText().toString().equals(binding.inputConfirmPassword.getText().toString())){
-            showToast("Password & Confirm Password must be same ");
+            binding.inputConfirmPassword.setError("Password and confirm password must be same");
+            dialog.show();
             return false;
         }else{
             return true;

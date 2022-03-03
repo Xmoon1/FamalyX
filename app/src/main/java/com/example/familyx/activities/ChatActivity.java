@@ -1,5 +1,6 @@
 package com.example.familyx.activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ public class ChatActivity extends BaseActivity {
         loadReceiverDetails();
         init();
         listenMessages();
+        toInterlocutorInfo();
         User user = new User();
         Bitmap image = getUserInfo(receiverUser.image);
         binding.imageInfoButton.setImageBitmap(image);
@@ -116,7 +118,6 @@ public class ChatActivity extends BaseActivity {
                 .whereEqualTo(Constants.KEY_SENDER_ID, receiverUser.id)
                 .whereEqualTo(Constants.KEY_RECEIVER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
-
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
@@ -230,6 +231,16 @@ public class ChatActivity extends BaseActivity {
     private Bitmap getUserInfo(String encodedImage){
         byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    private void toInterlocutorInfo(){
+        binding.imageInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), InterlocutorActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
 

@@ -2,6 +2,7 @@ package com.example.familyx.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 public class PreferenceManager {
 

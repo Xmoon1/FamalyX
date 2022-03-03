@@ -1,12 +1,17 @@
 package com.example.familyx.adapters;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.familyx.R;
 import com.example.familyx.databinding.ItemContainerReceivedMessageBinding;
 import com.example.familyx.databinding.ItemContainerSendMessageBinding;
 import com.example.familyx.models.ChatMessage;
@@ -52,7 +57,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }else{
             ((ReceiverMessageViewHolder) holder).setData(chatMessages.get(position), receiverProfileImage);
         }
+
     }
+
 
     @Override
     public int getItemCount() {
@@ -71,6 +78,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     static  class SentMessageViewHolder extends RecyclerView.ViewHolder{
         private final ItemContainerSendMessageBinding binding;
 
+
         SentMessageViewHolder(ItemContainerSendMessageBinding itemContainerSendMessageBinding){
             super(itemContainerSendMessageBinding.getRoot());
             binding = itemContainerSendMessageBinding;
@@ -78,17 +86,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         void setData(ChatMessage chatMessage){
             binding.textMessage.setText(chatMessage.message);
             binding.textDataTime.setText(chatMessage.dataTime);
-
         }
     }
+
 
     static  class ReceiverMessageViewHolder extends RecyclerView.ViewHolder{
         private final ItemContainerReceivedMessageBinding binding;
 
+
+
         ReceiverMessageViewHolder(ItemContainerReceivedMessageBinding itemContainerReceivedMessageBinding){
             super(itemContainerReceivedMessageBinding.getRoot());
             binding = itemContainerReceivedMessageBinding;
-
         }
         void setData(ChatMessage chatMessage, Bitmap receiverProfileImage){
             binding.textMessage.setText(chatMessage.message);

@@ -1,8 +1,12 @@
 package com.example.familyx.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -26,6 +30,7 @@ public class SignInActivity extends AppCompatActivity {
 
     PreferenceManager preferenceManager;
     private ActivitySignInBinding binding;
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,9 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setListeners();
         progressBarSpinner();
+
+        dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
     }
 
     private void setListeners(){
@@ -57,7 +65,7 @@ public class SignInActivity extends AppCompatActivity {
                 null,
                 android.R.attr.progressBarStyle);
 
-        spinner.getIndeterminateDrawable().setColorFilter(212121, android.graphics.PorterDuff.Mode.MULTIPLY);
+
     }
 
     private void signIn() {
@@ -82,7 +90,15 @@ public class SignInActivity extends AppCompatActivity {
                         loading(false);
                         showToast("Unable to sign in");
                     }
+
                 });
+
+        db.collection(Constants.KEY_COLLECTION_USERS)
+                .whereNotEqualTo(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString())
+                .get()
+                .addOnSuccessListener(task ->
+                        binding.inputPassword.setError("Incorrect password")
+                        );
 
     }
 
@@ -103,15 +119,16 @@ public class SignInActivity extends AppCompatActivity {
 
     private Boolean isValidSignUpDetails() {
         if (binding.inputPhone.getText().toString().trim().isEmpty()) {
-            showToast("Enter Phone");
+            binding.inputPhone.setError("Enter phone");
+
             return false;
-        } else if (!Patterns.PHONE.matcher(binding.inputPhone .getText().toString()).matches()) {
-            showToast("Enter valid phone");
+        } else if (!Patterns.PHONE.matcher(binding.inputPhone.getText().toString()).matches()) {
+            binding.inputPhone.setError("Enter valid phone");
             return false;
         } else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
-            showToast("Enter Password");
+            binding.inputPassword.setError("Enter password");
             return false;
-        }else{
+        } else{
             return true;
         }
     }
